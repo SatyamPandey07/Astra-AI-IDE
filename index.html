@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Astra IDE - Autonomous AI Developer</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Boxicons -->
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Monaco Editor Loader (RequireJS) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>
+</head>
+<body class="dark-theme">
+    <!-- Background Orbs -->
+    <div class="glowing-bg">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+        <div class="glow-orb orb-3"></div>
+    </div>
+
+    <div class="ide-container">
+        <!-- Top Navigation Header -->
+        <header class="ide-header glass-panel">
+            <div class="header-left">
+                <div class="brand">
+                    <i class='bx bxs-bot brand-icon'></i>
+                    <div class="brand-details">
+                        <span class="brand-name">Astra AI IDE</span>
+                        <span class="brand-tag">Antigravity-Inspired Agent Interface</span>
+                    </div>
+                </div>
+                <div class="breadcrumb">
+                    <span class="crumb-sec">workspace</span>
+                    <i class='bx bx-chevron-right separator'></i>
+                    <span class="crumb-sec active" id="breadcrumb-file">index.html</span>
+                </div>
+            </div>
+            
+            <div class="header-center">
+                <button class="btn btn-run" id="btn-run-preview" title="Compile and Run Application Preview">
+                    <i class='bx bx-play-circle'></i> Run Preview
+                </button>
+                <button class="btn btn-reset" id="btn-reset-vfs" title="Reset Workspace to Default Project">
+                    <i class='bx bx-refresh'></i> Reset
+                </button>
+            </div>
+
+            <div class="header-right">
+                <div class="api-key-container">
+                    <i class='bx bx-key api-key-icon'></i>
+                    <input type="password" id="gemini-api-key" placeholder="Enter Gemini API Key (Optional)...">
+                </div>
+                <div class="status-badge">
+                    <span class="pulse-dot"></span> <span id="status-text">Idle</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="ide-body">
+            <!-- Left Column: File Explorer (Sidebar) -->
+            <aside class="sidebar-panel glass-panel">
+                <div class="panel-header">
+                    <span class="panel-title"><i class='bx bx-navigation icon-accent'></i> Explorer</span>
+                    <div class="explorer-actions">
+                        <button id="btn-new-file" title="New File"><i class='bx bx-file-plus'></i></button>
+                    </div>
+                </div>
+                <div class="file-explorer" id="file-explorer-tree">
+                    <!-- Files will be injected dynamically -->
+                </div>
+                <div class="sidebar-footer">
+                    <span class="vfs-stats" id="vfs-status-label">3 files</span>
+                </div>
+            </aside>
+
+            <!-- Center Column: Editor & Iframe Preview + Terminal Output (Vertical Split) -->
+            <main class="center-workspace-panel">
+                <!-- Top Panel: Editor Workspace -->
+                <div class="editor-panel glass-panel">
+                    <div class="editor-header">
+                        <div class="editor-tabs" id="editor-tab-list">
+                            <!-- Tabs dynamically populated -->
+                        </div>
+                        <div class="view-toggle">
+                            <button class="toggle-btn active" id="view-mode-code"><i class='bx bx-code-alt'></i> Code</button>
+                            <button class="toggle-btn" id="view-mode-preview"><i class='bx bx-window-alt'></i> Preview</button>
+                        </div>
+                    </div>
+
+                    <div class="editor-content">
+                        <!-- Monaco Editor -->
+                        <div id="editor-container" class="editor-workspace"></div>
+                        
+                        <!-- App Iframe Preview -->
+                        <div id="preview-container" class="preview-workspace" style="display: none;">
+                            <div class="preview-address-bar">
+                                <i class='bx bx-lock-alt icon-lock'></i>
+                                <span class="address-text">http://localhost:3000/index.html</span>
+                                <button class="preview-reload" id="btn-reload-preview" title="Reload Viewport"><i class='bx bx-refresh'></i></button>
+                            </div>
+                            <iframe id="app-preview-frame" sandbox="allow-scripts allow-modals allow-same-origin"></iframe>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Panel: Console/Terminal Execution Logs -->
+                <div class="terminal-panel glass-panel">
+                    <div class="panel-header">
+                        <span class="panel-title"><i class='bx bx-terminal icon-accent'></i> Console & Build Logs</span>
+                        <div class="terminal-actions">
+                            <button id="btn-clear-terminal" title="Clear Console"><i class='bx bx-block'></i></button>
+                        </div>
+                    </div>
+                    <div class="terminal-body" id="ide-terminal-log">
+                        <div class="terminal-line system-line">> Initializing Astra VFS Environment...</div>
+                        <div class="terminal-line system-line">> Monaco Editor engine successfully loaded.</div>
+                        <div class="terminal-line success-line">> Workspace status: Ready for development.</div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Right Column: AI Assistant (Sidebar) -->
+            <aside class="chat-panel glass-panel">
+                <div class="panel-header">
+                    <span class="panel-title"><i class='bx bx-bot icon-accent'></i> Astra AI Assistant</span>
+                    <button class="btn-clear-chat" id="btn-clear-conversation" title="Clear Chat Log"><i class='bx bx-trash'></i></button>
+                </div>
+                
+                <div class="chat-history" id="chat-messages-log">
+                    <div class="chat-message system-message">
+                        <div class="avatar"><i class='bx bxs-bot'></i></div>
+                        <div class="message-bubble">
+                            Welcome to the Antigravity-inspired Astra IDE.
+                            <br><br>
+                            I have access to edit your workspace files directly. Tell me what application you want to build and watch me compile the codebase!
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Input Section -->
+                <div class="chat-input-container">
+                    <div class="chat-input-wrapper">
+                        <textarea id="agent-chat-prompt" placeholder="Message Astra... (e.g. 'Build a modern pomodoro app')"></textarea>
+                        <button id="agent-send-prompt-btn" class="btn-send-message"><i class='bx bx-send'></i></button>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+    
+    <!-- Script -->
+    <script src="app.js"></script>
+</body>
+</html>

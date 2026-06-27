@@ -3,155 +3,366 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Astra IDE - Autonomous AI Developer</title>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
-    <!-- Boxicons -->
+    <title>Astra AI IDE — Autonomous Coding Environment</title>
+    <meta name="description" content="Astra AI IDE — A premium autonomous AI coding environment.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
-    <!-- Stylesheet -->
-    <link rel="stylesheet" href="style.css">
-    <!-- Monaco Editor Loader (RequireJS) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body class="dark-theme">
-    <!-- Background Orbs -->
-    <div class="glowing-bg">
-        <div class="glow-orb orb-1"></div>
-        <div class="glow-orb orb-2"></div>
-        <div class="glow-orb orb-3"></div>
+<body>
+    <div class="mesh-bg" aria-hidden="true">
+        <div class="mesh-node n1"></div>
+        <div class="mesh-node n2"></div>
+        <div class="mesh-node n3"></div>
+        <div class="mesh-node n4"></div>
     </div>
 
-    <div class="ide-container">
-        <!-- Top Navigation Header -->
-        <header class="ide-header glass-panel">
-            <div class="header-left">
+    <div class="ide-shell" id="ide-shell">
+        <!-- TOP TITLEBAR -->
+        <header class="titlebar" id="titlebar">
+            <div class="titlebar-left">
                 <div class="brand">
-                    <i class='bx bxs-bot brand-icon'></i>
-                    <div class="brand-details">
-                        <span class="brand-name">Astra AI IDE</span>
-                        <span class="brand-tag">Antigravity-Inspired Agent Interface</span>
+                    <svg class="brand-logo" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <defs>
+                            <linearGradient id="lg1" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#06b6d4"/>
+                                <stop offset="100%" stop-color="#8b5cf6"/>
+                            </linearGradient>
+                        </defs>
+                        <path d="M16 2L28 9V23L16 30L4 23V9L16 2Z" stroke="url(#lg1)" stroke-width="2" fill="none"/>
+                        <path d="M16 8L22 12V20L16 24L10 20V12L16 8Z" fill="url(#lg1)" opacity="0.3"/>
+                        <circle cx="16" cy="16" r="3" fill="url(#lg1)"/>
+                    </svg>
+                    <div class="brand-text">
+                        <span class="brand-name">Astra AI</span>
+                        <span class="brand-sub">IDE v2.0</span>
                     </div>
                 </div>
-                <div class="breadcrumb">
-                    <span class="crumb-sec">workspace</span>
-                    <i class='bx bx-chevron-right separator'></i>
-                    <span class="crumb-sec active" id="breadcrumb-file">index.html</span>
-                </div>
-            </div>
-            
-            <div class="header-center">
-                <button class="btn btn-run" id="btn-run-preview" title="Compile and Run Application Preview">
-                    <i class='bx bx-play-circle'></i> Run Preview
-                </button>
-                <button class="btn btn-reset" id="btn-reset-vfs" title="Reset Workspace to Default Project">
-                    <i class='bx bx-refresh'></i> Reset
-                </button>
+                <nav class="breadcrumb" aria-label="File breadcrumb">
+                    <span class="crumb">workspace</span>
+                    <i class='bx bx-chevron-right crumb-sep' aria-hidden="true"></i>
+                    <span class="crumb active" id="breadcrumb-file">index.html</span>
+                </nav>
             </div>
 
-            <div class="header-right">
-                <div class="api-key-container">
-                    <i class='bx bx-key api-key-icon'></i>
-                    <input type="password" id="gemini-api-key" placeholder="Enter Gemini API Key (Optional)...">
+            <div class="titlebar-center">
+                <div class="toolbar-group">
+                    <button class="tool-btn primary" id="btn-run-preview" title="Run Preview (Ctrl+Shift+P)">
+                        <i class='bx bx-play-circle'></i> <span>Run</span>
+                    </button>
+                    <button class="tool-btn" id="btn-format-code" title="Format Document">
+                        <i class='bx bx-code-curly'></i> <span>Format</span>
+                    </button>
+                    <button class="tool-btn danger" id="btn-reset-vfs" title="Reset Workspace">
+                        <i class='bx bx-refresh'></i>
+                    </button>
                 </div>
-                <div class="status-badge">
-                    <span class="pulse-dot"></span> <span id="status-text">Idle</span>
+                <div class="device-toggle" id="device-toggle-group">
+                    <button class="device-btn active" data-device="desktop" title="Desktop View"><i class='bx bx-desktop'></i></button>
+                    <button class="device-btn" data-device="tablet" title="Tablet View"><i class='bx bx-tab'></i></button>
+                    <button class="device-btn" data-device="mobile" title="Mobile View"><i class='bx bx-mobile-alt'></i></button>
+                </div>
+            </div>
+
+            <div class="titlebar-right">
+                <div class="api-field" id="api-field-wrapper">
+                    <i class='bx bx-key' aria-hidden="true"></i>
+                    <input type="password" id="gemini-api-key" placeholder="Gemini API Key (optional)" autocomplete="off" spellcheck="false">
+                    <button class="api-reveal-btn" id="btn-reveal-api" title="Show/Hide Key"><i class='bx bx-hide'></i></button>
+                </div>
+                <div class="status-pill" id="status-pill">
+                    <span class="pulse-dot" id="pulse-dot"></span>
+                    <span id="status-text">Ready</span>
+                </div>
+                <div class="model-chip" id="model-chip-display" title="Active AI Model">
+                    <i class='bx bx-chip'></i> Demo Mode
                 </div>
             </div>
         </header>
 
-        <div class="ide-body">
-            <!-- Left Column: File Explorer (Sidebar) -->
-            <aside class="sidebar-panel glass-panel">
-                <div class="panel-header">
-                    <span class="panel-title"><i class='bx bx-navigation icon-accent'></i> Explorer</span>
-                    <div class="explorer-actions">
-                        <button id="btn-new-file" title="New File"><i class='bx bx-file-plus'></i></button>
+        <!-- MAIN WORKSPACE -->
+        <div class="workspace" id="workspace">
+            <!-- ACTIVITY BAR -->
+            <nav class="activity-bar" id="activity-bar" aria-label="Activity Bar">
+                <div class="activity-top">
+                    <button class="activity-btn active" id="act-explorer" data-panel="explorer" title="File Explorer"><i class='bx bx-file-blank'></i></button>
+                    <button class="activity-btn" id="act-search" data-panel="search" title="Search"><i class='bx bx-search'></i></button>
+                    <button class="activity-btn" id="act-agent" data-panel="agent" title="Agent Chat"><i class='bx bxs-bot'></i></button>
+                    <button class="activity-btn" id="act-settings" data-panel="settings" title="Settings"><i class='bx bx-cog'></i></button>
+                </div>
+                <div class="activity-bottom">
+                    <button class="activity-btn" id="act-theme-toggle" title="Toggle Light/Dark Theme"><i class='bx bx-moon'></i></button>
+                    <button class="activity-btn" id="act-keyboard-shortcuts" title="Keyboard Shortcuts"><i class='bx bx-keyboard'></i></button>
+                </div>
+            </nav>
+
+            <!-- LEFT SIDEBAR -->
+            <aside class="sidebar" id="sidebar" aria-label="Sidebar">
+                <!-- EXPLORER PANEL -->
+                <div class="side-panel active-panel" id="panel-explorer">
+                    <div class="side-panel-header">
+                        <span class="side-panel-title">EXPLORER</span>
+                        <div class="side-panel-actions">
+                            <button class="icon-btn" id="btn-new-file" title="New File"><i class='bx bx-file-plus'></i></button>
+                            <button class="icon-btn" id="btn-new-folder" title="New Folder"><i class='bx bx-folder-plus'></i></button>
+                        </div>
+                    </div>
+                    <div class="workspace-label"><i class='bx bx-chevron-down'></i> WORKSPACE</div>
+                    <div class="file-tree" id="file-tree" role="tree" aria-label="File Explorer"></div>
+                    <div class="side-panel-footer"><span id="vfs-stats">3 files</span></div>
+                </div>
+
+                <!-- SEARCH PANEL -->
+                <div class="side-panel hidden" id="panel-search">
+                    <div class="side-panel-header"><span class="side-panel-title">SEARCH</span></div>
+                    <div class="search-area">
+                        <div class="search-input-wrap">
+                            <input type="text" id="global-search-input" placeholder="Search across files..." class="search-input">
+                            <button class="icon-btn" id="btn-do-search"><i class='bx bx-search'></i></button>
+                        </div>
+                        <div id="search-results" class="search-results"></div>
                     </div>
                 </div>
-                <div class="file-explorer" id="file-explorer-tree">
-                    <!-- Files will be injected dynamically -->
+
+                <!-- SETTINGS PANEL -->
+                <div class="side-panel hidden" id="panel-settings">
+                    <div class="side-panel-header"><span class="side-panel-title">EDITOR SETTINGS</span></div>
+                    <div class="settings-list">
+                        <label class="setting-row">
+                            <span class="setting-label">Font Size</span>
+                            <select id="setting-font-size" class="setting-select">
+                                <option value="12">12px</option>
+                                <option value="13" selected>13px</option>
+                                <option value="14">14px</option>
+                                <option value="16">16px</option>
+                                <option value="18">18px</option>
+                            </select>
+                        </label>
+                        <label class="setting-row">
+                            <span class="setting-label">Tab Size</span>
+                            <select id="setting-tab-size" class="setting-select">
+                                <option value="2" selected>2 Spaces</option>
+                                <option value="4">4 Spaces</option>
+                            </select>
+                        </label>
+                        <label class="setting-row">
+                            <span class="setting-label">Word Wrap</span>
+                            <select id="setting-word-wrap" class="setting-select">
+                                <option value="off">Off</option>
+                                <option value="on" selected>On</option>
+                            </select>
+                        </label>
+                        <label class="setting-row">
+                            <span class="setting-label">Minimap</span>
+                            <select id="setting-minimap" class="setting-select">
+                                <option value="true">Enabled</option>
+                                <option value="false" selected>Disabled</option>
+                            </select>
+                        </label>
+                        <label class="setting-row">
+                            <span class="setting-label">Editor Theme</span>
+                            <select id="setting-theme" class="setting-select">
+                                <option value="vs-dark" selected>Dark</option>
+                                <option value="vs">Light</option>
+                                <option value="hc-black">High Contrast</option>
+                            </select>
+                        </label>
+                    </div>
                 </div>
-                <div class="sidebar-footer">
-                    <span class="vfs-stats" id="vfs-status-label">3 files</span>
+
+                <!-- AGENT INFO PANEL -->
+                <div class="side-panel hidden" id="panel-agent">
+                    <div class="side-panel-header"><span class="side-panel-title">ASTRA AGENT</span></div>
+                    <div class="chat-mirror-note">
+                        <i class='bx bx-info-circle'></i>
+                        Agent chat panel is on the right side. Drag the right resize handle to expand it.
+                    </div>
                 </div>
             </aside>
 
-            <!-- Center Column: Editor & Iframe Preview + Terminal Output (Vertical Split) -->
-            <main class="center-workspace-panel">
-                <!-- Top Panel: Editor Workspace -->
-                <div class="editor-panel glass-panel">
-                    <div class="editor-header">
-                        <div class="editor-tabs" id="editor-tab-list">
-                            <!-- Tabs dynamically populated -->
-                        </div>
-                        <div class="view-toggle">
-                            <button class="toggle-btn active" id="view-mode-code"><i class='bx bx-code-alt'></i> Code</button>
-                            <button class="toggle-btn" id="view-mode-preview"><i class='bx bx-window-alt'></i> Preview</button>
+            <!-- RESIZE: Sidebar -->
+            <div class="resize-handle rh-horizontal" id="resize-sidebar" title="Drag to resize"></div>
+
+            <!-- CENTER COLUMN -->
+            <main class="center-column" id="center-column">
+                <div class="editor-area" id="editor-area">
+                    <!-- Tab Bar -->
+                    <div class="tab-bar" id="tab-bar">
+                        <div class="tab-list" id="tab-list" role="tablist"></div>
+                        <div class="view-switcher">
+                            <button class="view-btn active" id="view-code" data-view="code" title="Code Editor"><i class='bx bx-code-alt'></i> Code</button>
+                            <button class="view-btn" id="view-preview" data-view="preview" title="Live Preview"><i class='bx bx-window-alt'></i> Preview</button>
                         </div>
                     </div>
 
-                    <div class="editor-content">
-                        <!-- Monaco Editor -->
-                        <div id="editor-container" class="editor-workspace"></div>
-                        
-                        <!-- App Iframe Preview -->
-                        <div id="preview-container" class="preview-workspace" style="display: none;">
-                            <div class="preview-address-bar">
-                                <i class='bx bx-lock-alt icon-lock'></i>
-                                <span class="address-text">http://localhost:3000/index.html</span>
-                                <button class="preview-reload" id="btn-reload-preview" title="Reload Viewport"><i class='bx bx-refresh'></i></button>
+                    <!-- Editor/Preview Wrap -->
+                    <div class="editor-preview-wrap" id="editor-preview-wrap">
+                        <div id="monaco-editor" class="monaco-mount"></div>
+
+                        <div id="preview-wrap" class="preview-wrap hidden">
+                            <div class="address-bar">
+                                <div class="addr-controls">
+                                    <button class="addr-btn" id="addr-reload" title="Reload"><i class='bx bx-refresh'></i></button>
+                                </div>
+                                <div class="addr-field">
+                                    <i class='bx bx-lock-alt addr-lock'></i>
+                                    <span class="addr-url" id="addr-url">astra://workspace/index.html</span>
+                                </div>
+                                <div class="addr-end">
+                                    <button class="addr-btn" id="btn-open-new-window" title="Open in New Window"><i class='bx bx-link-external'></i></button>
+                                </div>
                             </div>
-                            <iframe id="app-preview-frame" sandbox="allow-scripts allow-modals allow-same-origin"></iframe>
+                            <div class="device-frame-wrapper" id="device-frame-wrapper">
+                                <div class="device-frame" id="device-frame">
+                                    <iframe id="preview-frame" sandbox="allow-scripts allow-modals allow-same-origin allow-forms" title="Live Preview"></iframe>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Bottom Panel: Console/Terminal Execution Logs -->
-                <div class="terminal-panel glass-panel">
-                    <div class="panel-header">
-                        <span class="panel-title"><i class='bx bx-terminal icon-accent'></i> Console & Build Logs</span>
-                        <div class="terminal-actions">
-                            <button id="btn-clear-terminal" title="Clear Console"><i class='bx bx-block'></i></button>
+                <!-- RESIZE: Terminal -->
+                <div class="resize-handle rh-vertical" id="resize-terminal" title="Drag to resize terminal"></div>
+
+                <!-- TERMINAL -->
+                <div class="terminal-panel" id="terminal-panel">
+                    <div class="terminal-header">
+                        <div class="log-filter-tabs">
+                            <button class="log-tab active" data-filter="all">ALL</button>
+                            <button class="log-tab" data-filter="info">INFO</button>
+                            <button class="log-tab" data-filter="warn">WARN</button>
+                            <button class="log-tab" data-filter="error">ERROR</button>
+                            <button class="log-tab" data-filter="agent">AGENT</button>
+                        </div>
+                        <div class="terminal-header-actions">
+                            <button class="icon-btn" id="btn-copy-logs" title="Copy Logs"><i class='bx bx-copy'></i></button>
+                            <button class="icon-btn" id="btn-clear-logs" title="Clear Console"><i class='bx bx-trash'></i></button>
+                            <button class="icon-btn" id="btn-toggle-terminal" title="Collapse Terminal"><i class='bx bx-chevron-down'></i></button>
                         </div>
                     </div>
-                    <div class="terminal-body" id="ide-terminal-log">
-                        <div class="terminal-line system-line">> Initializing Astra VFS Environment...</div>
-                        <div class="terminal-line system-line">> Monaco Editor engine successfully loaded.</div>
-                        <div class="terminal-line success-line">> Workspace status: Ready for development.</div>
-                    </div>
+                    <div class="terminal-body" id="terminal-body" role="log" aria-live="polite"></div>
                 </div>
             </main>
 
-            <!-- Right Column: AI Assistant (Sidebar) -->
-            <aside class="chat-panel glass-panel">
-                <div class="panel-header">
-                    <span class="panel-title"><i class='bx bx-bot icon-accent'></i> Astra AI Assistant</span>
-                    <button class="btn-clear-chat" id="btn-clear-conversation" title="Clear Chat Log"><i class='bx bx-trash'></i></button>
+            <!-- RESIZE: Chat -->
+            <div class="resize-handle rh-horizontal" id="resize-chat" title="Drag to resize chat"></div>
+
+            <!-- RIGHT: AGENT CHAT -->
+            <aside class="chat-sidebar" id="chat-sidebar" aria-label="Astra Agent Chat">
+                <div class="chat-header">
+                    <div class="chat-header-left">
+                        <span class="chat-title"><i class='bx bxs-bot'></i> Astra</span>
+                        <div class="model-badge" id="model-badge">
+                            <span class="model-dot"></span>
+                            <span id="model-name-text">Demo Mode</span>
+                        </div>
+                    </div>
+                    <div class="chat-header-actions">
+                        <button class="icon-btn" id="btn-export-chat" title="Export Chat"><i class='bx bx-download'></i></button>
+                        <button class="icon-btn" id="btn-clear-chat" title="Clear Chat"><i class='bx bx-trash'></i></button>
+                    </div>
                 </div>
-                
-                <div class="chat-history" id="chat-messages-log">
-                    <div class="chat-message system-message">
-                        <div class="avatar"><i class='bx bxs-bot'></i></div>
-                        <div class="message-bubble">
-                            Welcome to the Antigravity-inspired Astra IDE.
-                            <br><br>
-                            I have access to edit your workspace files directly. Tell me what application you want to build and watch me compile the codebase!
+
+                <div class="chat-messages" id="chat-messages" role="log" aria-live="polite">
+                    <div class="chat-msg agent-msg" id="welcome-msg">
+                        <div class="msg-avatar agent-avatar">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 2L20 7V17L12 22L4 17V7L12 2Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                                <circle cx="12" cy="12" r="3" fill="currentColor" opacity="0.6"/>
+                            </svg>
+                        </div>
+                        <div class="msg-content">
+                            <div class="msg-meta">
+                                <span class="msg-sender">Astra</span>
+                                <span class="msg-time" id="welcome-time"></span>
+                            </div>
+                            <div class="msg-bubble">
+                                <p>Hello! I'm <strong>Astra</strong>, your autonomous AI coding assistant.</p>
+                                <p>I have direct access to your workspace files. Describe any app and I'll build it.</p>
+                                <div class="quick-prompts" id="quick-prompts">
+                                    <p class="quick-prompt-label">Quick Start:</p>
+                                    <div class="prompt-chips">
+                                        <button class="prompt-chip" data-prompt="Build an analog clock with neon styling">⏰ Analog Clock</button>
+                                        <button class="prompt-chip" data-prompt="Build a calculator app with dark theme">🔢 Calculator</button>
+                                        <button class="prompt-chip" data-prompt="Build a kanban board with drag and drop">📋 Kanban Board</button>
+                                        <button class="prompt-chip" data-prompt="Build a markdown preview editor">📝 Markdown Editor</button>
+                                        <button class="prompt-chip" data-prompt="Build a music player UI with visualizer">🎵 Music Player</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Chat Input Section -->
-                <div class="chat-input-container">
-                    <div class="chat-input-wrapper">
-                        <textarea id="agent-chat-prompt" placeholder="Message Astra... (e.g. 'Build a modern pomodoro app')"></textarea>
-                        <button id="agent-send-prompt-btn" class="btn-send-message"><i class='bx bx-send'></i></button>
+                <div class="chat-input-area">
+                    <div class="chat-input-box" id="chat-input-box">
+                        <textarea id="chat-input" placeholder="Describe an app to build..." rows="1" aria-label="Chat input"></textarea>
+                        <div class="chat-input-toolbar">
+                            <span class="char-counter" id="char-counter">0</span>
+                            <button class="send-btn" id="btn-send" title="Send (Enter)"><i class='bx bx-send'></i></button>
+                        </div>
                     </div>
+                    <div class="chat-input-hints"><kbd>Enter</kbd> send · <kbd>Shift+Enter</kbd> new line</div>
                 </div>
             </aside>
         </div>
+
+        <!-- STATUS BAR -->
+        <footer class="status-bar" id="status-bar" aria-label="Status Bar">
+            <div class="status-left">
+                <span class="status-item"><i class='bx bx-git-branch'></i> main</span>
+                <span class="status-item status-ok" id="sb-build-status"><i class='bx bx-check-circle'></i> Build OK</span>
+            </div>
+            <div class="status-right">
+                <span class="status-item" id="sb-lang">HTML</span>
+                <span class="status-item" id="sb-encoding">UTF-8</span>
+                <span class="status-item" id="sb-cursor">Ln 1, Col 1</span>
+                <span class="status-item" id="sb-words">0 words</span>
+                <span class="status-item status-autosave" id="sb-autosave"><i class='bx bx-cloud-upload'></i> Saved</span>
+            </div>
+        </footer>
     </div>
-    
-    <!-- Script -->
+
+    <!-- KEYBOARD SHORTCUTS MODAL -->
+    <div class="modal-overlay hidden" id="shortcuts-modal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <span class="modal-title"><i class='bx bx-keyboard'></i> Keyboard Shortcuts</span>
+                <button class="icon-btn" id="btn-close-shortcuts"><i class='bx bx-x'></i></button>
+            </div>
+            <div class="shortcut-list">
+                <div class="shortcut-row"><kbd>Ctrl+S</kbd><span>Save &amp; Recompile</span></div>
+                <div class="shortcut-row"><kbd>Ctrl+P</kbd><span>Quick Open File</span></div>
+                <div class="shortcut-row"><kbd>Ctrl+Shift+P</kbd><span>Run Preview</span></div>
+                <div class="shortcut-row"><kbd>Shift+Alt+F</kbd><span>Format Document</span></div>
+                <div class="shortcut-row"><kbd>Ctrl+F</kbd><span>Find in File</span></div>
+                <div class="shortcut-row"><kbd>Ctrl+/</kbd><span>Toggle Comment</span></div>
+                <div class="shortcut-row"><kbd>Ctrl+Z</kbd><span>Undo</span></div>
+                <div class="shortcut-row"><kbd>Esc</kbd><span>Close Modal / Focus Editor</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTEXT MENU -->
+    <div class="context-menu hidden" id="context-menu" role="menu">
+        <button class="ctx-item" id="ctx-rename"><i class='bx bx-edit-alt'></i> Rename</button>
+        <button class="ctx-item" id="ctx-duplicate"><i class='bx bx-duplicate'></i> Duplicate</button>
+        <div class="ctx-divider"></div>
+        <button class="ctx-item danger" id="ctx-delete"><i class='bx bx-trash'></i> Delete</button>
+    </div>
+
+    <!-- QUICK OPEN MODAL -->
+    <div class="modal-overlay hidden" id="quickopen-modal">
+        <div class="quickopen-box">
+            <div class="quickopen-input-wrap">
+                <i class='bx bx-search'></i>
+                <input type="text" id="quickopen-input" placeholder="Type a filename to open..." autocomplete="off">
+            </div>
+            <div class="quickopen-results" id="quickopen-results"></div>
+        </div>
+    </div>
+
     <script src="app.js"></script>
 </body>
 </html>
